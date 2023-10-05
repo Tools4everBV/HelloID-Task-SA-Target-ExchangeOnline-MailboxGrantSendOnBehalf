@@ -2,7 +2,7 @@
 ################################################################
 # Form mapping
 $formObject = @{
-    MailboxIdentity = $form.MailboxDistinguishedName
+    MailboxIdentity = $form.MailboxIdentity
     UsersToAdd      = $form.UsersToAdd.id
 }
 
