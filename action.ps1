@@ -2,12 +2,12 @@
 ################################################################
 # Form mapping
 $formObject = @{
-    MailboxDistinguishedName = $form.MailboxDistinguishedName
-    UsersToAdd               = $form.UsersToAdd.id
+    MailboxIdentity = $form.MailboxDistinguishedName
+    UsersToAdd      = $form.UsersToAdd.id
 }
 
 try {
-    Write-Information "Executing ExchangeOnline action: [MailboxGrantSendOnBehalf] for: [$($formObject.MailboxDistinguishedName)]"
+    Write-Information "Executing ExchangeOnline action: [MailboxGrantSendOnBehalf] for: [$($formObject.MailboxIdentity)]"
 
     $null = Import-Module ExchangeOnlineManagement
 
@@ -17,31 +17,31 @@ try {
     $IsConnected = $true
 
     foreach ($user in $formObject.UsersToAdd) {
-        $null = Set-Mailbox -Identity $formObject.MailboxDistinguishedName -GrantSendOnBehalfTo @{add = "$user" } -Confirm:$false -ErrorAction Stop
+        $null = Set-Mailbox -Identity $formObject.MailboxIdentity -GrantSendOnBehalfTo @{add = "$user" } -Confirm:$false -ErrorAction Stop
 
         $auditLog = @{
             Action            = 'UpdateResource'
             System            = 'ExchangeOnline'
-            TargetIdentifier  = $formObject.MailboxDistinguishedName
-            TargetDisplayName = $formObject.MailboxDistinguishedName
-            Message           = "ExchangeOnline action: [MailboxGrantSendOnBehalf] Added [$($user)] to mailbox [$($formObject.MailboxDistinguishedName)] executed successfully"
+            TargetIdentifier  = $formObject.MailboxIdentity
+            TargetDisplayName = $formObject.MailboxIdentity
+            Message           = "ExchangeOnline action: [MailboxGrantSendOnBehalf] Added [$($user)] to mailbox [$($formObject.MailboxIdentity)] executed successfully"
             IsError           = $false
         }
         Write-Information -Tags 'Audit' -MessageData $auditLog
-        Write-Information "ExchangeOnline action: [MailboxGrantSendOnBehalf] Added [$($user)] to mailbox [$($formObject.MailboxDistinguishedName)] executed successfully"
+        Write-Information "ExchangeOnline action: [MailboxGrantSendOnBehalf] Added [$($user)] to mailbox [$($formObject.MailboxIdentity)] executed successfully"
     }
 } catch {
     $ex = $_
     $auditLog = @{
         Action            = 'UpdateResource'
         System            = 'ExchangeOnline'
-        TargetIdentifier  = $formObject.MailboxDistinguishedName
-        TargetDisplayName = $formObject.MailboxDistinguishedName
-        Message           = "Could not execute ExchangeOnline action: [MailboxGrantSendOnBehalf] for: [$($formObject.MailboxDistinguishedName)], error: $($ex.Exception.Message)"
+        TargetIdentifier  = $formObject.MailboxIdentity
+        TargetDisplayName = $formObject.MailboxIdentity
+        Message           = "Could not execute ExchangeOnline action: [MailboxGrantSendOnBehalf] for: [$($formObject.MailboxIdentity)], error: $($ex.Exception.Message)"
         IsError           = $true
     }
     Write-Information -Tags 'Audit' -MessageData $auditLog
-    Write-Error "Could not execute ExchangeOnline action: [MailboxGrantSendOnBehalf] for: [$($formObject.MailboxDistinguishedName)], error: $($ex.Exception.Message)"
+    Write-Error "Could not execute ExchangeOnline action: [MailboxGrantSendOnBehalf] for: [$($formObject.MailboxIdentity)], error: $($ex.Exception.Message)"
 } finally {
     if ($IsConnected) {
         $null = Disconnect-ExchangeOnline -Confirm:$false -Verbose:$false
